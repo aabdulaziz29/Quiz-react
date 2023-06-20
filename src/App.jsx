@@ -1,62 +1,95 @@
+import React from "react";
 import "./index.scss";
+import { useState } from "react";
 
 const questions = [
   {
-    title: "React - это ... ?",
-    variants: ["библиотека", "фреймворк", "приложение"],
+    title: "React is...?",
+    variants: ["library", "framework", "application"],
     correct: 0,
   },
   {
-    title: "Компонент - это ... ",
+    title: "The component is...",
     variants: [
-      "приложение",
-      "часть приложения или страницы",
-      "то, что я не знаю что такое",
+      "application",
+      "part of an application or page",
+      "what I don't know what is",
     ],
     correct: 1,
   },
   {
-    title: "Что такое JSX?",
+    title: "What is JSX?",
     variants: [
-      "Это простой HTML",
-      "Это функция",
-      "Это тот же HTML, но с возможностью выполнять JS-код",
+      "This is plain HTML",
+      "This is a function",
+      "This is the same HTML, but with the ability to execute JS codequ",
     ],
     correct: 2,
   },
 ];
 
-function Result() {
+function Result({ correct }) {
   return (
     <div className="result">
       <img src="https://cdn-icons-png.flaticon.com/512/2278/2278992.png" />
-      <h2>Вы отгадали 3 ответа из 10</h2>
-      <button>Попробовать снова</button>
+      <h2>
+        You guessed {correct} answers out of {questions.length}
+      </h2>
+      <a href="/">
+        <button>Try again</button>
+      </a>
     </div>
   );
 }
 
-function Game() {
+function Game({ step, question, onClickVariant }) {
+  const percentage = Math.round((step / questions.length) * 100);
+
+  console.log(percentage);
   return (
     <>
       <div className="progress">
-        <div style={{ width: "50%" }} className="progress__inner"></div>
+        <div
+          style={{ width: `${percentage}%` }}
+          className="progress__inner"
+        ></div>
       </div>
-      <h1>What is useState?</h1>
+      <h1>{question.title}</h1>
       <ul>
-        <li>This is a function to store component data</li>
-        <li>This is a global state</li>
-        <li>This is when no one needs you</li>
+        <li>
+          {question.variants.map((text, index) => (
+            <li onClick={() => onClickVariant(index)} key={text}>
+              {text}
+            </li>
+          ))}
+        </li>
       </ul>
     </>
   );
 }
 
 function App() {
+  const [step, setStep] = useState(0);
+  const [correct, setCorrect] = useState(0);
+  const question = questions[step];
+
+  const onClickVariant = (index) => {
+    console.log(step, index);
+    setStep(step + 1);
+
+    if (index == question.correct) {
+      setCorrect(correct + 1);
+    }
+  };
+
+  console.log(question);
   return (
     <div className="App">
-      <Game />
-      {/* <Result /> */}
+      {step != questions.length ? (
+        <Game step={step} question={question} onClickVariant={onClickVariant} />
+      ) : (
+        <Result correct={correct} />
+      )}
     </div>
   );
 }
